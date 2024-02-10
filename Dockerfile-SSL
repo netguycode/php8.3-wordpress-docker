@@ -56,11 +56,19 @@ RUN \
     chmod +x wp-cli.phar && \
     mv wp-cli.phar /usr/local/bin/wp
 
+# Import wp-entrypoint.sh file
+COPY wp-entrypoint.sh /usr/local/bin/wp-init.sh
+
 # Fix permissions to ensure that the app directory is owned by the non-root user
 RUN chown -R docker:docker /var/www/html/wordpress
 
 # Expose port 80 and 443
 EXPOSE 80 443
+
+
+# Modify the entry point to execute the WordPress initialization script before starting Apache
+ENTRYPOINT ["/usr/local/bin/wp-init.sh"]
+
 
 # When the container starts, start Apache as well
 CMD ["apache2-foreground"]
