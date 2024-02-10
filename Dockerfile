@@ -59,8 +59,14 @@ RUN \
 # Fix permissions to ensure that the app directory is owned by the non-root user
 RUN chown -R docker:docker /var/www/html/wordpress
 
+# Import wp-entrypoint.sh file
+COPY wp-entrypoint.sh /usr/local/bin/wp-init.sh
+
 # Expose port 80 and 443
 EXPOSE 80
+
+# Modify the entry point to execute the WordPress initialization script before starting Apache
+ENTRYPOINT ["/usr/local/bin/wp-init.sh"]
 
 # When the container starts, start Apache as well
 CMD ["apache2-foreground"]
