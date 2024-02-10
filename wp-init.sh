@@ -30,7 +30,7 @@ DISALLOW_FILE_EDIT="${DISALLOW_FILE_EDIT:-false}"
 FORCE_SSL_ADMIN="${FORCE_SSL_ADMIN:-true}"
 
 # Path to WordPress installation
-WP_PATH="/var/www/html/wordpress"
+WP_PATH="${APACHE_DOCUMENT:-/var/www/html}"
 
 # Ensure necessary utilities are installed
 if [ ! -x "$(command -v brotli)" ]; then
