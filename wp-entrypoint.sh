@@ -32,17 +32,6 @@ FORCE_SSL_ADMIN="${FORCE_SSL_ADMIN:-true}"
 # Path to WordPress installation
 WP_PATH="${APACHE_DOCUMENT:-/var/www/html}"
 
-# Ensure necessary utilities are installed
-if [ ! -x "$(command -v brotli)" ]; then
-    apt-get update && apt-get install -y brotli
-fi
-
-if [ ! -x "$(command -v wp)" ]; then
-    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-    chmod +x wp-cli.phar
-    mv wp-cli.phar /usr/local/bin/wp
-fi
-
 # Set permissions for WordPress directory
 chown -R www-data:www-data ${WP_PATH}
 
