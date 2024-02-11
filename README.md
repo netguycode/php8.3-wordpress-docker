@@ -1,81 +1,88 @@
-# WordPress Setup Script with Cloudflare Detection and Redis Configuration
+**PHP 8.3 WordPress - NetGuy Variant**
 
-This script automates the setup of WordPress, including the configuration for Cloudflare and Redis. It ensures WordPress is optimized for performance and security by leveraging Cloudflare's protection and Redis for object caching.
+**Description:**
+This Dockerfile and entrypoint script combination facilitates the deployment of WordPress applications within a Docker container. The Dockerfile extends from thecodingmachine/php image, providing a pre-configured PHP environment with Apache web server. The entrypoint script handles initialization and configuration of WordPress upon container startup, including environment variable validation, database setup, wp-config.php generation, and plugin activation.
 
-## Prerequisites
+**Usage:**
+1. **Building the Docker Image:**
+   - Place the Dockerfile and entrypoint script in the root directory of your WordPress project.
+   - Run the following command to build the Docker image:
+     ```
+     docker build -t your-image-name .
+     ```
+   Replace `your-image-name` with the desired name for your Docker image.
 
-- A Linux server with Docker and Docker Compose installed.
-- Access to the command line of the server.
-- A WordPress Docker container setup.
-- WP-CLI installed within the container for WordPress management.
-- Redis server accessible to the WordPress container.
-- (Optional) Cloudflare set up for your domain.
+2. **Running the Docker Container:**
+   - Before running the container, ensure you have a MySQL/MariaDB database set up with appropriate credentials.
+   - Define the required environment variables:
+     - `SITE_URL`: URL of your WordPress site.
+     - `WORDPRESS_DB_NAME`: Name of the WordPress database.
+     - `WORDPRESS_DB_USER`: Username for accessing the WordPress database.
+     - `WORDPRESS_DB_PASSWORD`: Password for the WordPress database user.
+     - `WORDPRESS_DB_HOST`: Hostname or IP address of the database server.
+   - Optionally, set additional environment variables to customize WordPress settings:
+     - `WORDPRESS_TABLE_PREFIX`: Database table prefix (default is `wp_`).
+     - `WORDPRESS_MEMORY_LIMIT`: PHP memory limit for WordPress (default is `256M`).
+     - `SITE_NAME`: Name of your WordPress site (default is `Your Site Name`).
+     - `SITE_DESCRIPTION`: Description of your WordPress site (default is `Your Site Description`).
+     - `WORDPRESS_DEBUG`: Enable WordPress debugging (default is `false`).
+     - `WORDPRESS_DEBUG_DISPLAY`: Display PHP errors (default is `false`).
+     - `WORDPRESS_DEBUG_LOG`: Log PHP errors to wp-content/debug.log (default is `true`).
+     - `WORDPRESS_AUTO_UPDATE_CORE`: Enable auto-updates for WordPress core (default is `true`).
+     - `AUTOMATIC_UPDATER_DISABLED`: Disable automatic updates (default is `false`).
+     - `WP_ALLOW_MULTISITE`: Enable WordPress multisite (default is `true`).
+     - `WORDPRESS_POST_REVISIONS`: Number of post revisions to keep (default is `5`).
+     - `DISALLOW_FILE_EDIT`: Disallow file editing from WordPress admin (default is `false`).
+     - `FORCE_SSL_ADMIN`: Force SSL for WordPress admin (default is `true`).
+     - `REDIS_HOST`: Hostname or IP address of Redis server for object caching (optional).
+     - `REDIS_PORT`: Port number of Redis server (optional).
+     - `REDIS_PASSWORD`: Password for Redis server (optional).
+   - Run the Docker container with the following command:
+     ```
+     docker run -d \
+     -e SITE_URL=your-site-url \
+     -e WORDPRESS_DB_NAME=your-db-name \
+     -e WORDPRESS_DB_USER=your-db-user \
+     -e WORDPRESS_DB_PASSWORD=your-db-password \
+     -e WORDPRESS_DB_HOST=your-db-host \
+     -e WORDPRESS_TABLE_PREFIX=wp_ \
+     -e WORDPRESS_MEMORY_LIMIT=256M \
+     -e SITE_NAME="Your Site Name" \
+     -e SITE_DESCRIPTION="Your Site Description" \
+     -e WORDPRESS_DEBUG=false \
+     -e WORDPRESS_DEBUG_DISPLAY=false \
+     -e WORDPRESS_DEBUG_LOG=true \
+     -e WORDPRESS_AUTO_UPDATE_CORE=true \
+     -e AUTOMATIC_UPDATER_DISABLED=false \
+     -e WP_ALLOW_MULTISITE=true \
+     -e WORDPRESS_POST_REVISIONS=5 \
+     -e DISALLOW_FILE_EDIT=false \
+     -e FORCE_SSL_ADMIN=true \
+     -e REDIS_HOST=optional \
+     -e REDIS_PORT=optional \
+     -e REDIS_PASSWORD=optional \
+     -p 80:80 \
+     your-image-name
+     ```
+   Replace `your-site-url`, `your-db-name`, `your-db-user`, `your-db-password`, `your-db-host`, and `your-image-name` with appropriate values.
 
-## Environment Variables
+**Customization:**
+- **Adding PHP Extensions:** Modify the `PHP_EXTENSION_` environment variables in the Dockerfile to include additional PHP extensions required by your WordPress site.
+- **WordPress Configuration:** Customize the wp-config.php generation process in the entrypoint script to suit your specific requirements, such as defining custom constants or enabling/disabling features.
+- **Plugin Activation:** Modify the entrypoint script to activate/deactivate specific plugins upon container startup as needed.
 
-To fully utilize the script, set the following required and optional environment variables before running it:
+**Notes:**
+- This setup assumes Apache as the web server. Adjustments may be necessary if you prefer using a different web server (e.g., Nginx).
+- Ensure your Docker environment is properly configured, and you have appropriate permissions to execute Docker commands and access resources.
 
-### Required Variables
+**References:**
+- [Docker Documentation](https://docs.docker.com/)
+- [thecodingmachine/php Docker Image](https://hub.docker.com/r/thecodingmachine/php)
+- [WordPress Documentation](https://wordpress.org/support/)
+- [WP-CLI Documentation](https://wp-cli.org/)
 
-- `SITE_URL`: The URL of your WordPress site.
-- `WORDPRESS_DB_NAME`: The name of your WordPress database.
-- `WORDPRESS_DB_USER`: The username for your WordPress database access.
-- `WORDPRESS_DB_PASSWORD`: The password for your WordPress database access.
-- `WORDPRESS_DB_HOST`: The hostname or IP address of your WordPress database server.
+**Author:**
+[NetGuy](https://netguy.com.au/)
 
-### Optional Variables
-
-- `REDIS_HOST`: Hostname of the Redis server (for object caching).
-- `REDIS_PORT`: Port on which the Redis server is running.
-- `REDIS_PASSWORD`: Password for the Redis server.
-- `WORDPRESS_TABLE_PREFIX`: The database table prefix for WordPress installations. Defaults to `wp_` if not set.
-- `WORDPRESS_MEMORY_LIMIT`: The maximum amount of memory that your site can use. Defaults to `256M` if not set.
-- `SITE_NAME`: Your site's name. This is used to update the site options.
-- `SITE_DESCRIPTION`: A brief description of your site.
-- `WORDPRESS_DEBUG`: Enables or disables the WP_DEBUG mode. Defaults to `false`.
-- `WORDPRESS_DEBUG_DISPLAY`: Controls the display of errors and warnings. Defaults to `false`.
-- `WORDPRESS_DEBUG_LOG`: Enables or disables error logging to `wp-content/debug.log`. Defaults to `true`.
-- `WORDPRESS_AUTO_UPDATE_CORE`: Enables automatic updates for the WordPress core. Defaults to `true`.
-- `AUTOMATIC_UPDATER_DISABLED`: Disables all automatic updates. Defaults to `false`.
-- `WP_ALLOW_MULTISITE`: Enables WordPress Multisite. Defaults to `true`.
-- `WORDPRESS_POST_REVISIONS`: Specifies the number of post revisions to keep. Defaults to `5`.
-- `DISALLOW_FILE_EDIT`: Disables the file edit feature in the WordPress dashboard. Defaults to `false`.
-
-## Installation
-
-1. Clone this repository to your server:
-    ```bash
-    git clone https://your-repository-url.git
-    ```
-2. Navigate to the repository directory:
-    ```bash
-    cd your-repository-directory
-    ```
-3. Make the script executable:
-    ```bash
-    chmod +x setup-wordpress.sh
-    ```
-
-## Usage
-
-Before running the script, ensure all required environment variables are set. You can export them directly in your shell or define them in a `.env` file if you're using Docker Compose.
-
-To run the script:
-```bash
-./setup-wordpress.sh
-
-The script will:
-
-    Check for necessary prerequisites and environment variables.
-    Install and configure necessary utilities.
-    Detect if Cloudflare is protecting the site and apply configurations if necessary.
-    Configure Redis for object caching if Redis details are provided.
-    Shuffle security salts and update site options using WP-CLI.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a pull request or open an issue for any bugs or improvements.
-
-## License
-
-MIT License - Feel free to use and modify the script as needed for your own WordPress setups.
+**License:**
+[Specify any licensing information or terms of use if applicable]
